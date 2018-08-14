@@ -1,0 +1,29 @@
+# Java
+*.class
+*.jar
+
+# Eclipse
+.project
+.classpath
+.settings
+
+# OS
+Thumbs.db
+.DS_Store
+
+# IDEA
+/.idea
+
+# Gradle
+/.gradle
+!gradle-wrapper.jar
+
+# Build
+/out
+/build
+/bin
+
+# Other
+*.log
+*.swp
+*.bak
