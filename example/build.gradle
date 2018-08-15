@@ -1,0 +1,18 @@
+buildscript {
+    repositories {
+        mavenLocal()
+        mavenCentral()
+    }
+
+    dependencies {
+        classpath "com.anatawa12.kotlinScriptRunner:KotlinScriptRunner:1.0"
+    }
+}
+
+apply plugin: 'com.anatawa12.kotlinScriptRunner'
+
+import com.anatawa12.kotlinScriptRunner.KotlinScriptExec
+
+task runScript(type: KotlinScriptExec) {
+    script = file("$projectDir/script.kts")
+}

@@ -3,13 +3,29 @@ Kotlin Script Runner
 
 Kotlin Script Runner is an Apache2 Licensed gradle plugin, for run kotlin script.
 
+## Demo
+
+see [example project](https://github.com/anatawa12/KotlinScriptRunner/blob/master/exapmple).
+
 ## Usage
 
 apply plugin `com.anatawa12.kotlinScriptRunner` and create task with type `com.anatawa12.kotlinScriptRunner.KotlinScriptExec`
 
 ## Install
 
-please wait for deploy to maven repository.
+``` groovy
+buildscript {
+    repositories {
+        mavenCentral()
+    }
+
+    dependencies {
+        classpath "com.anatawa12.kotlinScriptRunner:KotlinScriptRunner:1.0"
+    }
+}
+
+apply plugin: 'com.anatawa12.kotlinScriptRunner'
+```
 
 ## Contribution
 

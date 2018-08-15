@@ -24,6 +24,7 @@ import org.gradle.api.Task
 import org.gradle.api.file.FileCollection
 import org.gradle.api.internal.AbstractTask
 import org.gradle.api.internal.artifacts.configurations.DefaultConfigurationContainer
+import org.gradle.api.internal.artifacts.dsl.DefaultRepositoryHandler
 import org.gradle.api.internal.artifacts.dsl.dependencies.DefaultDependencyHandler
 import org.gradle.api.internal.file.FileResolver
 import org.gradle.api.internal.file.collections.DefaultConfigurableFileCollection
@@ -50,24 +51,28 @@ class KotlinRunnerPlugin : Plugin<Project> {
 			extension = KotlinRunnerPluginExtension(this)
 			project.extensions.add("kotlinScript", extension)
 			val ktVersion = "1.2.51"
-			//val extension = extensions.create("kotlinScript", KotlinRunnerPluginExtension::class.java, this)
 			configurations.configure(object : Closure<Any?>(this) {
 				fun doCall(it: DefaultConfigurationContainer) {
 					val configuration = it.create("com.anatawa12.kotlinRunner")
-					//configuration.add()
-					configuration.all
 				}
-			})//*
+			})
+
+			repositories(object : Closure<Any?>(this) {
+				fun doCall(it: DefaultRepositoryHandler) {
+					it.mavenCentral()
+				}
+			})
+
 			dependencies(object : Closure<Any?>(this) {
 				fun doCall(it: DefaultDependencyHandler) {
-					it.add("com.anatawa12.kotlinRunner", "org.jetbrains.kotlin:kotlin-compiler")
-					it.add("com.anatawa12.kotlinRunner", "org.jetbrains.kotlin:kotlin-runtime")
-					it.add("com.anatawa12.kotlinRunner", "org.jetbrains.kotlin:kotlin-reflect")
-					it.add("com.anatawa12.kotlinRunner", "org.jetbrains.kotlin:kotlin-script-runtime")
-					it.add("com.anatawa12.kotlinRunner", "org.jetbrains.kotlin:kotlin-stdlib-jdk8")
+					it.add("com.anatawa12.kotlinRunner", "org.jetbrains.kotlin:kotlin-compiler:$ktVersion")
+					it.add("com.anatawa12.kotlinRunner", "org.jetbrains.kotlin:kotlin-runtime:$ktVersion")
+					it.add("com.anatawa12.kotlinRunner", "org.jetbrains.kotlin:kotlin-reflect:$ktVersion")
+					it.add("com.anatawa12.kotlinRunner", "org.jetbrains.kotlin:kotlin-script-runtime:$ktVersion")
+					it.add("com.anatawa12.kotlinRunner", "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$ktVersion")
 
 				}
-			})// */
+			})
 			prepareKotlinHome = tasks.create("prepareKotlinHome", Copy::class.java).apply {
 				group = "kotlin script runner"
 				from(configurations.getAt("com.anatawa12.kotlinRunner"))
@@ -98,12 +103,31 @@ open class KotlinScriptExec @Inject constructor(val fileResolver: FileResolver) 
 	}
 
 	var script: String? = null
+	var noJdk = false
+	var noReflect = false
+	var noStdlib = false
+	var nowarn = false
 
 	@TaskAction
 	fun exec() {
 		this.main = this.main
 		this.jvmArgs = this.jvmArgs
 		val args = this.args.toList()
+		val compilerArgs = mutableListOf("-kotlin-home", plugin.extension.kotlinHome,
+				"-classpath", _classpath.asPath,
+				"-script")
+		if (noJdk) {
+			compilerArgs.add("--no-jdk-reflect")
+		}
+		if (noReflect) {
+			compilerArgs.add("-no-reflect")
+		}
+		if (noStdlib) {
+			compilerArgs.add("-no-stdlib")
+		}
+		if (nowarn) {
+			compilerArgs.add("-nowarn")
+		}
 		setArgs(listOf("-kotlin-home", plugin.extension.kotlinHome,
 				"-classpath", _classpath.asPath,
 				"-script", script ?: throw IllegalStateException("No script file specified")))
