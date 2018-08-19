@@ -92,7 +92,7 @@ uploadArchives {
                 }
 
                 repository(url: sonatypeRepositoryUrl) {
-                    authentication(userName: property("com.anatawa12.sonatype.username"), password: property("com.anatawa12.sonatype.passeord"))
+                    authentication(userName: getProperty("com.anatawa12.sonatype.username"), password: getProperty("com.anatawa12.sonatype.passeord"))
                 }
 
                 pom.project {
