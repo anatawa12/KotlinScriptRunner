@@ -1,15 +1,17 @@
 plugins {
-    id("maven")
-    id("signing")
-    id("java")
+    `maven-publish`
+    signing
+    java
     id("org.jetbrains.kotlin.jvm") version "1.4.0"
-    id("groovy")
 }
 group = "com.anatawa12.kotlinScriptRunner"
 version = "1.0"
 
 java {
     sourceCompatibility = JavaVersion.VERSION_1_8
+
+    withJavadocJar()
+    withSourcesJar()
 }
 
 repositories {
@@ -30,24 +32,6 @@ tasks.compileKotlin {
 
 tasks.compileTestKotlin {
     kotlinOptions.jvmTarget = "1.8"
-}
-
-// for deploy
-val sourceJar by tasks.creating(Jar::class) {
-    archiveClassifier.set("sources")
-    from(sourceSets.main.get().allJava)
-}
-
-val javadocJar by tasks.creating(Jar::class) {
-    dependsOn(tasks.javadoc.get())
-    from(tasks.javadoc.get().destinationDir)
-    archiveClassifier.set("javadoc")
-}
-
-artifacts {
-    archives(tasks.jar.get())
-    archives(sourceJar)
-    archives(javadocJar)
 }
 
 //set build variables based on build type (release, continuous integration, development)
@@ -75,67 +59,64 @@ repositories {
     mavenCentral()
 }
 
-signing {
-    isRequired = isReleaseBuild
-    sign(configurations.archives.get())
-}
-
 val uploadArchives: Upload by tasks
 
-//*
-uploadArchives.apply {
-    repositories {
-        if (isDevBuild) {
-            mavenLocal()
-        } else {
-
-            withConvention(MavenRepositoryHandlerConvention::class) {
-                mavenDeployer {
-                    withGroovyBuilder {
-                        "repository"("url" to sonatypeRepositoryUrl) {
-                            "authentication"(
-                                "userName" to project.properties["com.anatawa12.sonatype.username"],
-                                "password" to project.properties["com.anatawa12.sonatype.passeord"]
-                            )
-                        }
+publishing {
+    publications {
+        create<MavenPublication>("mavenJava") {
+            artifactId = project.name
+            from(components["java"])
+            versionMapping {
+                usage("java-api") {
+                    fromResolutionOf("runtimeClasspath")
+                }
+                usage("java-runtime") {
+                    fromResolutionResult()
+                }
+            }
+            pom {
+                name.set("Kotlin Script Runner")
+                packaging = "jar"
+                url.set("https://github.com/anatawa12/KotlinScriptRunner/")
+                description.set("Kotlin Script Runner is an Apache2 Licensed gradle plugin, for run kotlin script.")
+                licenses {
+                    license {
+                        name.set("Apache License 2.0")
+                        url.set("https://github.com/anatawa12/KotlinScriptRunner/blob/master/LICENSE")
+                        distribution.set("repo")
                     }
-
-                    pom.project {
-
-                        withGroovyBuilder {
-                            "name" ("Kotlin Script Runner")
-                            "packaging" ("jar")
-                            "url" ("https://github.com/anatawa12/KotlinScriptRunner/")
-                            "description" ("Kotlin Script Runner is an Apache2 Licensed gradle plugin, for run kotlin script.")
-                            "licenses" {
-                                "license" {
-                                    "name"("Apache License 2.0")
-                                    "url"("https://github.com/anatawa12/KotlinScriptRunner/blob/master/LICENSE")
-                                    "distribution"("repo")
-                                }
-                            }
-                            "developers" {
-                                "developer" {
-                                    "name" ("anatawa12")
-                                }
-                            }
-                            "scm" {
-                                "url" ("https://github.com/anatawa12/KotlinScriptRunner/")
-                                "connection" ("scm:git@github.com:anatawa12/KotlinScriptRunner.git")
-                                "developerConnection" ("scm:git:git@github.com:anatawa12/KotlinScriptRunner.git")
-                            }
-                            "organization" {
-                                "name" ("com.github.anatawa12")
-                                "url" ("https://github.com/anatawa12")
-                            }
-                            "issueManagement" {
-                                "system" ("GitHub")
-                                "url" ("https://github.com/anatawa12/KotlinScriptRunner/issues")
-                            }
-                        }
+                }
+                developers {
+                    developer {
+                        id.set("anatawa12")
+                        name.set("anatawa12")
                     }
+                }
+                scm {
+                    url.set("https://github.com/anatawa12/KotlinScriptRunner/")
+                    connection.set("scm:git@github.com:anatawa12/KotlinScriptRunner.git")
+                    developerConnection.set("scm:git:git@github.com:anatawa12/KotlinScriptRunner.git")
+                }
+                issueManagement {
+                    system.set("GitHub")
+                    url.set("https://github.com/anatawa12/KotlinScriptRunner/issues")
                 }
             }
         }
     }
+
+    repositories {
+        maven {
+            url = uri(sonatypeRepositoryUrl)
+            credentials {
+                username = project.properties["com.anatawa12.sonatype.username"]?.toString()
+                password = project.properties["com.anatawa12.sonatype.passeord"]?.toString()
+            }
+        }
+    }
+}
+
+signing {
+    isRequired = isReleaseBuild
+    sign(publishing.publications["mavenJava"])
 }
