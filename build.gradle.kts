@@ -7,8 +7,8 @@ plugins {
 }
 group = "com.anatawa12.kotlinScriptRunner"
 version = "1.0"
+
 java {
-    //sourceCompatibility = 1.8
     sourceCompatibility = JavaVersion.VERSION_1_8
 }
 
@@ -17,7 +17,8 @@ repositories {
 }
 
 dependencies {
-    implementation(kotlin("stdlib-jdk8"))
+    // use stdlib built in gradle
+    //implementation(kotlin("stdlib-jdk8"))
 
     implementation(gradleApi())
     implementation(localGroovy())
