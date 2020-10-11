@@ -2,9 +2,6 @@ buildscript {
     repositories {
         mavenCentral()
     }
-    dependencies {
-        classpath files("build/libs/kotlinRunner-1.0.jar")
-    }
 }
 plugins {
     id "maven"
@@ -19,7 +16,6 @@ version '1.0'
 sourceCompatibility = 1.8
 
 repositories {
-    println(it.class)
     mavenCentral()
 }
 
