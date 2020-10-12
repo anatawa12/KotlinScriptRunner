@@ -12,6 +12,7 @@ jobs:
         uses: actions/cache@v2
         with:
           path: "~/.gradle/caches"
+          key: gradle-caches-dir-${{ hashFiles('**/*.gradle') }}
 
       - name: "Setup Java"
         uses: actions/setup-java@v1
