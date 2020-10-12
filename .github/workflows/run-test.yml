@@ -1,0 +1,28 @@
+name: Run Gradle on PRs and Pushes
+on: [pull_request, push]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: "Cache ~/.gradle/caches"
+        uses: actions/cache@v2
+        with:
+          path: "~/.gradle/caches"
+
+      - name: "Setup Java"
+        uses: actions/setup-java@v1
+        with:
+          java-version: 8
+
+      - name: run test
+        run: ./gradlew test
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v1.0.0
+        with:
+          name: test-result-${{ matrix.os }}
+          path: build/reports/tests
