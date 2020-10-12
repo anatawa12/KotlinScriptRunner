@@ -1,5 +1,6 @@
 plugins {
     `maven-publish`
+    `java-gradle-plugin`
     signing
     java
     id("org.jetbrains.kotlin.jvm") version "1.4.0"
@@ -32,6 +33,15 @@ tasks.compileKotlin {
 
 tasks.compileTestKotlin {
     kotlinOptions.jvmTarget = "1.8"
+}
+
+gradlePlugin {
+    plugins {
+        create("com.anatawa12.kotlinScriptRunner") {
+            id = "com.anatawa12.kotlinScriptRunner"
+            implementationClass = "com.anatawa12.kotlinScriptRunner.KotlinRunnerPlugin"
+        }
+    }
 }
 
 //set build variables based on build type (release, continuous integration, development)
