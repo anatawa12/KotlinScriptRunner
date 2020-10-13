@@ -6,7 +6,7 @@ plugins {
     id("org.jetbrains.kotlin.jvm") version "1.4.0"
 }
 group = "com.anatawa12.kotlinScriptRunner"
-version = "1.0"
+version = "2.0.0"
 
 java {
     sourceCompatibility = JavaVersion.VERSION_1_8
