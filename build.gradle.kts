@@ -5,7 +5,7 @@ plugins {
     java
     id("org.jetbrains.kotlin.jvm") version "1.4.0"
     id("com.jfrog.bintray") version "1.8.5"
-    id("com.gradle.plugin-publish") version "0.10.1"
+    id("com.gradle.plugin-publish") version "0.12.0"
 }
 
 // constants for this project
