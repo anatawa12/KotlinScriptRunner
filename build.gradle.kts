@@ -111,7 +111,7 @@ bintray {
     with(pkg) {
         name = "$group.${project.name}"
         desc = projectDescription
-        repo = "maven-snapshots"
+        repo = "maven"
         setLicenses("Apache-2.0")
         websiteUrl = projectWebsite
         issueTrackerUrl = projectIssueTracker
