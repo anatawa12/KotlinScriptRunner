@@ -14,7 +14,7 @@ version = "2.0.0"
 val projectWebsite = "https://github.com/anatawa12/KotlinScriptRunner/"
 val projectIssueTracker = "https://github.com/anatawa12/KotlinScriptRunner/issues"
 val projectDescription = "The Gradle plugin to execute some Kotlin Script as a Gradle task."
-val projectVcs = "git@github.com:anatawa12/KotlinScriptRunner.git"
+val projectVcs = "https://github.com/anatawa12/KotlinScriptRunner.git"
 val projectTags = listOf("kotlin-script", "gradle-plugin", "kotlin")
 
 java {
