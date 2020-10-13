@@ -4,9 +4,18 @@ plugins {
     signing
     java
     id("org.jetbrains.kotlin.jvm") version "1.4.0"
+    id("com.jfrog.bintray") version "1.8.5"
+    id("com.gradle.plugin-publish") version "0.10.1"
 }
+
+// constants for this project
 group = "com.anatawa12.kotlinScriptRunner"
 version = "2.0.0"
+val projectWebsite = "https://github.com/anatawa12/KotlinScriptRunner/"
+val projectIssueTracker = "https://github.com/anatawa12/KotlinScriptRunner/issues"
+val projectDescription = "The Gradle plugin to execute some Kotlin Script as a Gradle task."
+val projectVcs = "git@github.com:anatawa12/KotlinScriptRunner.git"
+val projectTags = listOf("kotlin-script", "gradle-plugin", "kotlin")
 
 java {
     sourceCompatibility = JavaVersion.VERSION_1_8
@@ -43,10 +52,29 @@ tasks.compileTestKotlin {
 
 gradlePlugin {
     plugins {
-        create("com.anatawa12.kotlinScriptRunner") {
+        create("KotlinScriptRunner") {
             id = "com.anatawa12.kotlinScriptRunner"
             implementationClass = "com.anatawa12.kotlinScriptRunner.KotlinRunnerPlugin"
         }
+    }
+}
+
+pluginBundle {
+    website = projectWebsite
+    vcsUrl = projectVcs
+
+    (plugins) {
+        "KotlinScriptRunner" {
+            displayName = project.name
+            description = projectDescription
+            tags = projectTags
+        }
+    }
+
+    mavenCoordinates {
+        groupId = project.group.toString()
+        artifactId = project.name
+        version = project.version.toString()
     }
 }
 
@@ -54,14 +82,11 @@ gradlePlugin {
 var isDevBuild: Boolean = false
 var isCiBuild: Boolean = false
 var isReleaseBuild: Boolean = false
-var sonatypeRepositoryUrl: String = ""
 if (hasProperty("release")) {
     isReleaseBuild = true
-    sonatypeRepositoryUrl = "https://oss.sonatype.org/service/local/staging/deploy/maven2/"
 } else if (hasProperty("ci")) {
     isCiBuild = true
     version = "$version-SNAPSHOT"
-    sonatypeRepositoryUrl = "https://oss.sonatype.org/content/repositories/snapshots/"
 } else {
     isDevBuild = true
     version = "$version-SNAPSHOT"
@@ -76,6 +101,27 @@ repositories {
 }
 
 val uploadArchives: Upload by tasks
+
+bintray {
+    user = project.findProperty("BINTRAY_USER")?.toString() ?: ""
+    key = project.findProperty("BINTRAY_KEY")?.toString() ?: ""
+
+    setPublications("mavenJava")
+
+    with(pkg) {
+        name = "$group.${project.name}"
+        desc = projectDescription
+        repo = "maven-snapshots"
+        setLicenses("Apache-2.0")
+        websiteUrl = projectWebsite
+        issueTrackerUrl = projectIssueTracker
+        vcsUrl = projectVcs
+        publicDownloadNumbers = true
+        with(version) {
+            name = project.version.toString()
+        }
+    }
+}
 
 publishing {
     publications {
@@ -120,19 +166,4 @@ publishing {
             }
         }
     }
-
-    repositories {
-        maven {
-            url = uri(sonatypeRepositoryUrl)
-            credentials {
-                username = project.properties["com.anatawa12.sonatype.username"]?.toString()
-                password = project.properties["com.anatawa12.sonatype.passeord"]?.toString()
-            }
-        }
-    }
-}
-
-signing {
-    isRequired = isReleaseBuild
-    sign(publishing.publications["mavenJava"])
 }
