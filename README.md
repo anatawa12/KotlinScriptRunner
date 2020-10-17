@@ -5,7 +5,7 @@ The gradle plugin to run Kotlin Script as a task.
 
 ## Demo
 
-see [example project](https://github.com/anatawa12/KotlinScriptRunner/blob/master/exapmple).
+see [example project](./example).
 
 ## Usage
 
