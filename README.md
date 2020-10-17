@@ -13,9 +13,12 @@ Now working...
 apply plugin `com.anatawa12.kotlinScriptRunner` and create task with type `com.anatawa12.kotlinScriptRunner.KotlinScriptExec`
 
 **Options**
+
 `KotlinScriptExec`
+
 This class implements `JavaExecSpec` to configure classpath, system properties or else.
 You can configure classpath, system properties and else like JavaExec task.
+
 Other properties are shown below:
 
 | property | type | description | default value |
